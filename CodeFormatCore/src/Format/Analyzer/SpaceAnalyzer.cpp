@@ -154,25 +154,39 @@ void SpaceAnalyzer::Analyze(FormatState &f, const LuaSyntaxTree &t) {
                     break;
                 }
                 case '.':
-                case ':':
-                case ']': {
+                case ':': {
                     SpaceAround(syntaxNode, t, 0);
+                    break;
+                }
+
+                case ']': {
+                    SpaceAround(syntaxNode, t, 1);
                 }
                 case '[': {
                     auto prevKind = syntaxNode.GetPrevToken(t).GetTokenKind(t);
                     if (prevKind == ',' || prevKind == ';') {
-                        SpaceRight(syntaxNode, t, 0);
+                        SpaceRight(syntaxNode, t, 1);
                     } else {
-                        SpaceAround(syntaxNode, t, 0);
+                        SpaceAround(syntaxNode, t, 1);
                     }
                     break;
                 }
                 case '(': {
-                    SpaceRight(syntaxNode, t, 0);
+                    auto nextKind = syntaxNode.GetNextToken(t).GetTokenKind(t);
+                    if ( nextKind == ')' ) {
+                        SpaceRight(syntaxNode, t, 0); 
+                    } else {
+                        SpaceRight(syntaxNode, t, 1);
+                    }
                     break;
                 }
                 case ')': {
-                    SpaceLeft(syntaxNode, t, 0);
+                    auto prevKind = syntaxNode.GetPrevToken(t).GetTokenKind(t);
+                    if ( prevKind == '(' ) {
+                        SpaceLeft(syntaxNode, t, 0); 
+                    } else {
+                        SpaceLeft(syntaxNode, t, 1);
+                    }
                     break;
                 }
                 case TK_LONG_COMMENT:
